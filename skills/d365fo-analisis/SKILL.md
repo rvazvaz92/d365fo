@@ -11,13 +11,14 @@ argument-hint: "Describe o comparte la historia, el proceso actual y el resultad
 Además de responder en el chat, guarda un `.txt` UTF-8 con lo revisado:
 
 - **Ubicación:** carpeta `Entregables_Skills` junto al documento de origen (créala si no existe). Si no hay documento de origen, usa la carpeta de trabajo y comunica la ruta.
-- **Nombre:** `02_d365fo-analisis.txt`. Si ya existe, no lo sobrescribas en silencio: agrega sufijo de fecha/hora.
+- **Modelo:** el usuario debe indicar el nombre del modelo (por ejemplo, `GRWCXC_99_CustFiscalInfo`) para identificar de dónde proviene el conocimiento. Si no lo indicó, pregúntalo con ask_user (respuesta libre) antes de guardar el `.txt`; reutilízalo en toda la cadena y en la sesión. Escríbelo en el encabezado como `Modelo : <nombre>`.
+- **Nombre:** `02_d365fo-analisis_<MODELO>.txt` (prefijo de prioridad, nombre de la skill y modelo, en ese orden). Si ya existe, no lo sobrescribas en silencio: agrega sufijo de fecha/hora.
 - **Contenido:** encabezado (skill, fecha, ruta de la fuente), qué se revisó y qué no pudo revisarse, hallazgos priorizados, mejoras, riesgos, preguntas abiertas y la siguiente skill de la cadena.
 - No incluyas credenciales ni datos sensibles. Indica la ruta del `.txt` en la respuesta final.
 
 ## Encadenamiento automático
 
-- **Entrada:** si existe el `01_d365fo-requerimiento.txt` de la misma fuente, úsalo como insumo y no repitas la extracción; verifica contra la fuente cuando algo no cuadre.
+- **Entrada:** si existe el `01_d365fo-requerimiento_<MODELO>.txt` de la misma fuente y del mismo modelo, úsalo como insumo y no repitas la extracción; verifica contra la fuente cuando algo no cuadre.
 - **Salida:** al terminar y guardar el `.txt`, **continúa sin pedir confirmación** con `d365fo-test-case`, salvo que el usuario haya pedido solo esta skill.
 
 Analiza la solicitud desde las perspectivas funcional, técnica y operativa. Responde en español y distingue hechos, inferencias y preguntas.

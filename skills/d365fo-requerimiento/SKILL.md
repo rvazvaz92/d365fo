@@ -11,7 +11,8 @@ argument-hint: "Comparte el DDF o historia de usuario y el módulo de Finance & 
 Además de responder en el chat, guarda un `.txt` UTF-8 con lo revisado:
 
 - **Ubicación:** carpeta `Entregables_Skills` junto al documento de origen (créala si no existe). Si no hay documento de origen, usa la carpeta de trabajo y comunica la ruta.
-- **Nombre:** `01_d365fo-requerimiento.txt`. Si ya existe, no lo sobrescribas en silencio: agrega sufijo de fecha/hora.
+- **Modelo:** el usuario debe indicar el nombre del modelo (por ejemplo, `GRWCXC_99_CustFiscalInfo`) para identificar de dónde proviene el conocimiento. Si no lo indicó, pregúntalo con ask_user (respuesta libre) antes de guardar el `.txt`; reutilízalo en toda la cadena y en la sesión. Escríbelo en el encabezado como `Modelo : <nombre>`.
+- **Nombre:** `01_d365fo-requerimiento_<MODELO>.txt` (prefijo de prioridad, nombre de la skill y modelo, en ese orden). Si ya existe, no lo sobrescribas en silencio: agrega sufijo de fecha/hora.
 - **Contenido:** encabezado (skill, fecha, ruta de la fuente), qué se revisó y qué no pudo revisarse (por ejemplo imágenes ilegibles o secciones vacías), el resultado completo de esta skill, preguntas abiertas y la siguiente skill de la cadena.
 - No incluyas credenciales ni datos sensibles. Indica la ruta del `.txt` en la respuesta final.
 
@@ -22,7 +23,7 @@ Cuando la fuente sea un DDF o historia de usuario, al terminar y guardar el `.tx
 1. `d365fo-analisis` (usa la misma fuente y el `.txt` 01 como insumo).
 2. `d365fo-test-case` (usa la fuente, el `.txt` 01 y el `.txt` 02).
 
-Cada skill genera su propio `.txt`. Si el usuario pide explícitamente solo esta skill, no encadenes. Al final resume los tres entregables y sus rutas.
+Cada skill genera su propio `.txt`. Pasa a las siguientes skills el mismo modelo (no lo vuelvas a preguntar). Si el usuario pide explícitamente solo esta skill, no encadenes. Al final resume los tres entregables y sus rutas.
 
 Convierte DDF e historias de usuario en requerimientos claros, trazables y verificables. Responde en español. No inventes reglas ni completes vacíos funcionales con supuestos silenciosos.
 

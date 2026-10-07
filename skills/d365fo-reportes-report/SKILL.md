@@ -11,7 +11,8 @@ argument-hint: "Indica el reporte, fuente de datos, tipo de ejecución, filtros 
 Además de responder en el chat, guarda un `.txt` UTF-8 con lo revisado:
 
 - **Ubicación:** carpeta `Entregables_Skills` junto al documento o proyecto de origen (créala si no existe). Si no hay origen, usa la carpeta de trabajo y comunica la ruta.
-- **Nombre:** `10_d365fo-reportes-report.txt`. Si ya existe, no lo sobrescribas en silencio: agrega sufijo de fecha/hora.
+- **Modelo:** el usuario debe indicar el nombre del modelo (por ejemplo, `GRWCXC_99_CustFiscalInfo`) para identificar de dónde proviene el conocimiento. Si no lo indicó, pregúntalo con ask_user (respuesta libre) antes de guardar el `.txt`; reutilízalo en toda la cadena y en la sesión. Escríbelo en el encabezado como `Modelo : <nombre>`.
+- **Nombre:** `10_d365fo-reportes-report_<MODELO>.txt` (prefijo de prioridad, nombre de la skill y modelo, en ese orden). Si ya existe, no lo sobrescribas en silencio: agrega sufijo de fecha/hora.
 - **Contenido:** encabezado (skill, fecha, fuente), qué se revisó y qué no pudo revisarse, tipo de reporte, fuente de datos, parámetros, diseño/alineación, validación y pendientes.
 - No incluyas credenciales ni datos sensibles. Indica la ruta del `.txt` en la respuesta final.
 

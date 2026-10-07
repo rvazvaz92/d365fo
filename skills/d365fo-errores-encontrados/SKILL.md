@@ -11,7 +11,8 @@ argument-hint: "Comparte el error, contexto, causa confirmada, solución y prueb
 Además de responder en el chat, guarda un `.txt` UTF-8 con lo revisado:
 
 - **Ubicación:** carpeta `Entregables_Skills` junto al documento o proyecto de origen (créala si no existe). Si no hay origen, usa la carpeta de trabajo y comunica la ruta.
-- **Nombre:** `13_d365fo-errores-encontrados.txt`. Si ya existe, no lo sobrescribas en silencio: agrega sufijo de fecha/hora.
+- **Modelo:** el usuario debe indicar el nombre del modelo (por ejemplo, `GRWCXC_99_CustFiscalInfo`) para identificar de dónde proviene el conocimiento. Si no lo indicó, pregúntalo con ask_user (respuesta libre) antes de guardar el `.txt`; reutilízalo en toda la cadena y en la sesión. Escríbelo en el encabezado como `Modelo : <nombre>`.
+- **Nombre:** `13_d365fo-errores-encontrados_<MODELO>.txt` (prefijo de prioridad, nombre de la skill y modelo, en ese orden). Si ya existe, no lo sobrescribas en silencio: agrega sufijo de fecha/hora.
 - **Contenido:** encabezado (skill, fecha, fuente), qué se revisó y qué no pudo revisarse, las entradas de wiki registradas o actualizadas con el formato de esta skill y pendientes.
 - No incluyas credenciales ni datos sensibles. Indica la ruta del `.txt` en la respuesta final.
 
