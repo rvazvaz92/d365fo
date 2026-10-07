@@ -6,6 +6,20 @@ argument-hint: "Comparte la historia, sus criterios de aceptación y el proceso 
 
 # D365 F&O — Diseño de test cases
 
+## Entregable obligatorio: archivo .txt (prioridad 03)
+
+Además de responder en el chat, guarda un `.txt` UTF-8 con lo revisado:
+
+- **Ubicación:** carpeta `Entregables_Skills` junto al documento de origen (créala si no existe). Si no hay documento de origen, usa la carpeta de trabajo y comunica la ruta.
+- **Nombre:** `03_d365fo-test-case.txt`. Si ya existe, no lo sobrescribas en silencio: agrega sufijo de fecha/hora.
+- **Contenido:** encabezado (skill, fecha, ruta de la fuente), qué se revisó y qué no pudo revisarse, la suite de casos completa, preguntas abiertas y la siguiente skill sugerida.
+- No incluyas credenciales ni datos sensibles. Indica la ruta del `.txt` en la respuesta final.
+
+## Encadenamiento automático
+
+- **Entrada:** usa los `.txt` 01 y 02 de la misma fuente si existen, y verifica contra la fuente cuando algo no cuadre.
+- **Salida:** es el final de la cadena automática. Al terminar, solo **sugiere** `d365fo-requerimientos-vs-test-case` para validar la trazabilidad; no la ejecutes sin que el usuario lo pida.
+
 Genera casos de prueba ejecutables y trazables a criterios de aceptación. Responde en español; conserva nombres reales de menús/campos cuando se conozcan y nunca los inventes.
 
 ## Cobertura requerida

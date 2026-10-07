@@ -6,6 +6,15 @@ argument-hint: "Indica el reporte, fuente de datos, tipo de ejecución, filtros 
 
 # D365 F&O — Reportes
 
+## Entregable obligatorio: archivo .txt (prioridad 10)
+
+Además de responder en el chat, guarda un `.txt` UTF-8 con lo revisado:
+
+- **Ubicación:** carpeta `Entregables_Skills` junto al documento o proyecto de origen (créala si no existe). Si no hay origen, usa la carpeta de trabajo y comunica la ruta.
+- **Nombre:** `10_d365fo-reportes-report.txt`. Si ya existe, no lo sobrescribas en silencio: agrega sufijo de fecha/hora.
+- **Contenido:** encabezado (skill, fecha, fuente), qué se revisó y qué no pudo revisarse, tipo de reporte, fuente de datos, parámetros, diseño/alineación, validación y pendientes.
+- No incluyas credenciales ni datos sensibles. Indica la ruta del `.txt` en la respuesta final.
+
 Determina primero el tipo de reporte y el patrón ya usado por el proyecto. No presupongas que todos los reportes deben usar RDP ni que los datos pueden consultarse sin respetar compañía y permisos.
 
 ## Diseño

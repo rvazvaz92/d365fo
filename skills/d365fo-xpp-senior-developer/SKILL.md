@@ -6,6 +6,15 @@ argument-hint: "Describe the D365 F&O/X++ task, affected module, and expected be
 
 # D365 F&O X++ Senior Developer
 
+## Entregable obligatorio: archivo .txt (prioridad 00)
+
+Además de responder en el chat, guarda un `.txt` UTF-8 con lo revisado:
+
+- **Ubicación:** carpeta `Entregables_Skills` junto al documento o proyecto de origen (créala si no existe). Si no hay origen, usa la carpeta de trabajo y comunica la ruta.
+- **Nombre:** `00_d365fo-xpp-senior-developer.txt`. Si ya existe, no lo sobrescribas en silencio: agrega sufijo de fecha/hora.
+- **Contenido:** encabezado (skill, fecha, fuente), qué se revisó y qué no pudo revisarse, artefacto y causa raíz o decisión de diseño, cambios, validación ejecutada y pendientes.
+- No incluyas credenciales ni datos sensibles. Indica la ruta del `.txt` en la respuesta final.
+
 Deliver maintainable, extensible, and testable Dynamics 365 Finance & Operations changes using X++ and platform-supported patterns, especially for integration contracts and extension architecture.
 
 ## Gather Facts First

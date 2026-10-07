@@ -6,6 +6,15 @@ argument-hint: "Describe el consumidor, entidad, campos, dirección del flujo y 
 
 # D365 F&O — Data entities
 
+## Entregable obligatorio: archivo .txt (prioridad 08)
+
+Además de responder en el chat, guarda un `.txt` UTF-8 con lo revisado:
+
+- **Ubicación:** carpeta `Entregables_Skills` junto al documento o proyecto de origen (créala si no existe). Si no hay origen, usa la carpeta de trabajo y comunica la ruta.
+- **Nombre:** `08_d365fo-entidades-entities.txt`. Si ya existe, no lo sobrescribas en silencio: agrega sufijo de fecha/hora.
+- **Contenido:** encabezado (skill, fecha, fuente), qué se revisó y qué no pudo revisarse, entidades y campos definidos o extendidos, contrato y mecanismos de consulta, validación y pendientes.
+- No incluyas credenciales ni datos sensibles. Indica la ruta del `.txt` en la respuesta final.
+
 Diseña entidades como contratos de integración mantenibles, no como una exposición accidental del esquema interno.
 
 ## Análisis

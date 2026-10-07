@@ -6,6 +6,15 @@ argument-hint: "Comparte el error, contexto, causa confirmada, solución y prueb
 
 # D365 F&O — Wiki de errores y soluciones
 
+## Entregable obligatorio: archivo .txt (prioridad 13)
+
+Además de responder en el chat, guarda un `.txt` UTF-8 con lo revisado:
+
+- **Ubicación:** carpeta `Entregables_Skills` junto al documento o proyecto de origen (créala si no existe). Si no hay origen, usa la carpeta de trabajo y comunica la ruta.
+- **Nombre:** `13_d365fo-errores-encontrados.txt`. Si ya existe, no lo sobrescribas en silencio: agrega sufijo de fecha/hora.
+- **Contenido:** encabezado (skill, fecha, fuente), qué se revisó y qué no pudo revisarse, las entradas de wiki registradas o actualizadas con el formato de esta skill y pendientes.
+- No incluyas credenciales ni datos sensibles. Indica la ruta del `.txt` en la respuesta final.
+
 Construye una base de conocimiento útil y verificable de problemas X++ y D365 F&O. No registres credenciales, datos personales ni secretos. No conviertas hipótesis no confirmadas en soluciones.
 
 ## Registro de cada caso

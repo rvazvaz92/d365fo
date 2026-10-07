@@ -6,6 +6,15 @@ argument-hint: "Comparte los requerimientos o historias junto con los casos de p
 
 # D365 F&O — Trazabilidad de requerimientos y pruebas
 
+## Entregable obligatorio: archivo .txt (prioridad 04)
+
+Además de responder en el chat, guarda un `.txt` UTF-8 con lo revisado:
+
+- **Ubicación:** carpeta `Entregables_Skills` junto al documento de origen (créala si no existe). Si no hay documento de origen, usa la carpeta de trabajo y comunica la ruta.
+- **Nombre:** `04_d365fo-requerimientos-vs-test-case.txt`. Si ya existe, no lo sobrescribas en silencio: agrega sufijo de fecha/hora.
+- **Contenido:** encabezado (skill, fecha, rutas de las fuentes), qué se revisó y qué no pudo revisarse, la matriz de trazabilidad, brechas y preguntas abiertas.
+- No incluyas credenciales ni datos sensibles. Indica la ruta del `.txt` en la respuesta final.
+
 Compara requerimientos e historias con test cases sin asumir que la existencia de una prueba implica cobertura correcta.
 
 ## Método

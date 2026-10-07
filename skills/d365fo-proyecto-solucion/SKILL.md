@@ -6,6 +6,15 @@ argument-hint: "Indica el repositorio, modelo/paquete y la pregunta sobre la sol
 
 # D365 F&O — Análisis de proyecto y solución
 
+## Entregable obligatorio: archivo .txt (prioridad 05)
+
+Además de responder en el chat, guarda un `.txt` UTF-8 con lo revisado:
+
+- **Ubicación:** carpeta `Entregables_Skills` junto al documento o proyecto de origen (créala si no existe). Si no hay origen, usa la carpeta de trabajo y comunica la ruta.
+- **Nombre:** `05_d365fo-proyecto-solucion.txt`. Si ya existe, no lo sobrescribas en silencio: agrega sufijo de fecha/hora.
+- **Contenido:** encabezado (skill, fecha, rutas inspeccionadas), qué se revisó y qué no pudo revisarse, arquitectura y flujo encontrados con rutas/nombres exactos, riesgos y preguntas abiertas.
+- No incluyas credenciales ni datos sensibles. Indica la ruta del `.txt` en la respuesta final.
+
 Investiga cómo está construida la solución actual y presenta evidencia antes de proponer cambios. Responde en español.
 
 ## Inspección

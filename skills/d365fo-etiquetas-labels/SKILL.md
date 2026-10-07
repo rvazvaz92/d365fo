@@ -6,6 +6,15 @@ argument-hint: "Indica el texto, idioma, artefacto y contexto donde se mostrará
 
 # D365 F&O — Etiquetas
 
+## Entregable obligatorio: archivo .txt (prioridad 12)
+
+Además de responder en el chat, guarda un `.txt` UTF-8 con lo revisado:
+
+- **Ubicación:** carpeta `Entregables_Skills` junto al documento o proyecto de origen (créala si no existe). Si no hay origen, usa la carpeta de trabajo y comunica la ruta.
+- **Nombre:** `12_d365fo-etiquetas-labels.txt`. Si ya existe, no lo sobrescribas en silencio: agrega sufijo de fecha/hora.
+- **Contenido:** encabezado (skill, fecha, fuente), qué se revisó y qué no pudo revisarse, tabla de etiquetas (ID, idioma, texto, objeto/propiedad donde se asigna), reutilizadas vs. nuevas y pendientes.
+- No incluyas credenciales ni datos sensibles. Indica la ruta del `.txt` en la respuesta final.
+
 Usa etiquetas localizables y convenciones del modelo para todo texto presentado al usuario.
 
 ## Procedimiento
