@@ -52,6 +52,7 @@ Compila y sincroniza metadata si se requiere; valida publicación, lectura/escri
 - RFCNumber ya esta en la entidad (mapea a CustTable.Rfc_MX); no agregarlo. CustCustomerBaseEntity no expone Rfc_MX.
 - Campo nuevo en entidad = prefijo GRW en Name y DataField apuntando al campo original (GRWSATPurpose_MX -> SATPurpose_MX), DataSource CustTable. El mismo campo y EDT en la extension de la staging.
 - Estructura: AxDataEntityViewExtension\<Entidad>.<Modelo>.xml con AxDataEntityViewField i:type AxDataEntityViewMappedField.
+- Nomenclatura: el nombre de las extensiones de entidad y staging varia segun el modelo (todos los modelos son distintos). En GRWCXC_99_CustFiscalInfo quedaron como <Entidad>.GRWCXC_99_CustFiscalInfo; en otro modelo puede ser distinto. Confirmalo antes de crear el archivo.
 - TaxRegimeCode_MX ya lo expone el estandar (CustCustomerV3Entity.ApplicationSuite_MX_Extension); decidir antes de duplicarlo con GRW.
 - Las validaciones de negocio van en CustTable (CoC de validateWrite y validateField), no en la entidad: se ejecutan en DMF, Excel y OData. DataEntity.validateWrite no llama a la de la tabla. Verificar que "Run business validations" este activa para la entidad. Las entidades de clientes V2, V3 y base no usan skipDataSourceValidateWrite.
 - Clase de mapeo solo si hay que defaultear o transformar; un campo con DataField no la necesita.

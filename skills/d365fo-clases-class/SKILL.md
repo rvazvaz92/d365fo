@@ -35,8 +35,9 @@ Inspecciona llamadas y extensión disponible antes de generar código. Compila e
 
 ## Reglas aprendidas: nombre de extensiones de clase y de objetos estandar
 
-- Patron: GRW<ObjetoEstandar>_<Modelo>_Extension (ej. GRWClase_IDDF_Extension, GRWCustTable_CXC_99_Extension). Archivo AxClass\<Nombre>.xml y Name igual.
+- Patron: GRW<ObjetoEstandar>_<CodigoModelo>_Extension (ej. GRWClase_IDDF_Extension, GRWCustTable_CXC_99_Extension). Archivo AxClass\<Nombre>.xml y Name igual.
+- Regla de nomenclatura: el codigo del modelo (IDDF, CXC_99, ...) cambia en cada modelo, porque todos los modelos son distintos. Nunca copiar el codigo de otro modelo ni asumir el de GRWCXC_99_CustFiscalInfo: tomalo del modelo en el que se trabaja, o confirmalo con el usuario si no es evidente. Los ejemplos de esta seccion son solo ilustrativos.
 - Atributo segun el objeto: [ExtensionOf(tableStr(CustTable))], classStr, formStr o formDataSourceStr; clase final; CoC con next; metodos de apoyo private con prefijo grw.
 - Al renombrar: cambiar archivo, Name, declaracion y .rnrproj (Content Include="AxClass\<Nombre>", Link Classes\), y borrar el anterior en K: y en el repo.
 - Ejemplo: GRWCustTable_CXC_99_Extension aplica validateWrite y validateField de CustTable segun CustParameters.GRWCustFiscalValidate (Rfc_MX, TaxRegimeCode_MX y SATPurpose_MX obligatorios; duplicidad de RFC salvo los de GRWCustRFCCatalog). Sin compilar.
-- Pendiente de confirmar: si CXC_99 es el codigo fijo del modelo o varia por proyecto.
+- Confirmado por el usuario: la nomenclatura de cualquier extension (clase, tabla, entidad, menu, formulario) varia segun el modelo; ver la regla de nomenclatura de esta seccion.

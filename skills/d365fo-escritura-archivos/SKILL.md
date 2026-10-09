@@ -39,6 +39,7 @@ Por cada formulario custom, dos privilegios ligados a su `MenuItemDisplay`:
 
 ## Menús
 - La extensión de menú tiene una estructura propia; la versión plana con `Name`, `ElementPosition` y `MenuItemName` directos en `AxMenuExtensionElement` rompe la compilación (CASO-003).
+- La nomenclatura de cualquier extensión (menú, clase, tabla, entidad, formulario) varía según el modelo: confirma el patrón del modelo en el que trabajas.
 - Ver `d365fo-userinterface`.
 
 ## Pendientes tras escribir

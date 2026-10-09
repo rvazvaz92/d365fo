@@ -31,6 +31,7 @@ Archivo: `AxMenuExtension\<MenuBase>.<Modelo>.xml` (por ejemplo `AccountsReceiva
 ## Reglas
 - El namespace raíz es `Microsoft.Dynamics.AX.Metadata.V1`; los hijos de `AxMenuExtensionElement` y `MenuElement` llevan `xmlns=""`.
 - El nombre del elemento va dentro de `MenuElement`, no directo en `AxMenuExtensionElement`. Un `AxMenuExtensionElement` con `<Name>` directo y sin `MenuElement` provoca `NullReferenceException` en `AxMenuExtensionElement.get_Name()` y rompe toda la compilación (`Failed to write runtime metadata to disk`).
+- La nomenclatura de las extensiones varía según el modelo (todos los modelos son distintos): confirma el patrón del modelo en el que trabajas antes de nombrar el archivo y el `<Name>`.
 - El nombre del archivo sigue el patrón del estándar: `<MenuBase>.<Modelo>.xml`. El sufijo `_Extension` no se comprobó como causa de error; el fallo documentado se debe a la estructura plana.
 - Un elemento por `AxMenuExtensionElement`. Cada uno con su `Parent`.
 - `Parent` es el nombre del submenú estándar. Valores de Cuentas por cobrar:

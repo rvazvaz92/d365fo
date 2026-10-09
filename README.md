@@ -29,6 +29,7 @@ Esta carpeta contiene las skills de Copilot/GitHub Copilot CLI para el ciclo de 
 - Todas las skills, nuevas o mejoradas, se crean y se editan únicamente en `source\repos\d365fo\skills\<skill>\SKILL.md`. No se mantienen copias en `.github\skills` de los repos de los modelos ni en `.agents\skills`; esta última solo contiene junctions.
 - Antes de crear una skill, busca si ya existe una equivalente en `skills\` y extiéndela con una sección nueva en lugar de duplicarla.
 - Guarda los `SKILL.md` en UTF-8 sin BOM y revisa que los acentos no queden dañados.
+- La nomenclatura de cualquier extensión (clase, tabla, entidad, menú, formulario) varía según el modelo: los nombres de los ejemplos son ilustrativos y no deben copiarse de un modelo a otro.
 - Tras cada cambio, haz commit y push desde este repositorio.
 
 ### Cómo sincronizar estas skills en una máquina nueva

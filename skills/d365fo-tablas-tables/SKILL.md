@@ -68,6 +68,7 @@ Los métodos `display` de la tabla alimentan campos calculados en formularios. E
 ## Reglas aprendidas: extensiones de tabla y staging con prefijo GRW
 
 - Todo campo nuevo en una extension de tabla estandar o en una staging lleva prefijo GRW (ej. GRWCustFiscalValidate en CustParameters, GRWSATPurpose_MX en CustCustomerV3Staging). Los campos estandar que solo se leen o validan conservan su nombre (Rfc_MX, SATPurpose_MX, TaxRegimeCode_MX en CustTable).
+- Nomenclatura: el nombre de cualquier extension (tabla, clase, entidad, menu, formulario) varia segun el modelo, porque todos los modelos son distintos. Toma el patron del modelo en el que trabajas; no copies el de GRWCXC_99_CustFiscalInfo. Los ejemplos de esta skill son ilustrativos.
 - Estructura de AxTableExtension: Name = <Tabla>.<Modelo>; campos con i:type AxTableFieldString o AxTableFieldEnum, ExtendedDataType o EnumType y Label.
 - Labels con prefijo @<ARCHIVO>: (ej. @CXC99:CXC99_039) y presentes en en-US y es-MX. Sin prefijo se muestra el texto literal (ocurrio en GRWCustFiscalValidate y en campos de GRWCustFiscalData). No reutilizar el label del formulario para un campo.
 - Antes de agregar un campo estandar a una entidad o staging, buscar en AxTableExtension y AxDataEntityViewExtension del estandar (ApplicationSuite_MX_Extension): TaxRegimeCode_MX ya esta expuesto en CustCustomerV3Entity y en su staging; agregarlo con GRW duplica el dato.

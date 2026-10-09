@@ -137,7 +137,7 @@ Un campo display muestra un valor calculado o de otra tabla sin guardarlo en bas
 ### Paso 1: método display en la tabla
 - Debe declararse `display`, sin parámetros, y devolver un tipo compatible con el control (`Description`, `Name`, `str`, `int`, `real`).
 - Usa `select firstOnly` y evita consultas pesadas, porque se ejecuta en cada refresco del grid. Si es costoso, cachea el resultado.
-- En tabla propia, el método va dentro de la tabla. En tabla estándar, usa una extensión: `[ExtensionOf(tableStr(SalesTable))] final class SalesTable_Extension { display Name custName() {...} }`.
+- En tabla propia, el método va dentro de la tabla. En tabla estándar, usa una extensión: `[ExtensionOf(tableStr(SalesTable))] final class SalesTable_Extension { display Name custName() {...} }`. El nombre de la clase es ilustrativo: la nomenclatura de cualquier extensión varía según el modelo (todos los modelos son distintos), así que usa la del modelo en el que trabajas (ver `d365fo-clases-class`).
 
 ### Paso 2: control en el formulario (XML)
 En el grid, un control String con `DataMethod` en lugar de `DataField`:
