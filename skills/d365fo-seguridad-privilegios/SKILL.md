@@ -27,3 +27,9 @@ Concede únicamente los permisos necesarios para una tarea de negocio identifica
 5. Verifica el acceso efectivo con los roles pertinentes; no confíes solo en que los metadatos compilan.
 
 No otorgues System Administrator como workaround, no amplíes permisos globales sin necesidad y no des por protegida una API solo porque su formulario está restringido. Entrega artefactos de seguridad, alcance y pruebas de acceso positivo/negativo.
+
+## Reglas aprendidas: privilegios de entidades
+
+- Dos privilegios por entidad, con los nombres que propone el asistente: <Entidad>Maintain (Create, Read, Update, Delete, Correct) y <Entidad>View (Read), en AxSecurityPrivilege.
+- Cada uno referencia la entidad en DataEntityPermissions.
+- Crear en el modelo en K:, no en source\repos.
