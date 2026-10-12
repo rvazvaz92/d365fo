@@ -183,3 +183,14 @@ Agrega aquí cada patrón nuevo que se aprenda.
 - Para editar etiquetas con acentos usa `replace_string_in_file`, que respeta UTF-8.
 - Evita comandos largos encadenados; se cancelan. Ejecuta pasos pequeños y verifica cada uno.
 - Verifica que el archivo no quede vacío después de crearlo.
+
+## Reglas aprendidas: lookup con event handler
+
+- Usar solo cuando el usuario pide explicitamente event handlers (ver regla en `d365fo-clases-class`). Caso tipico: convertir un campo de texto en lookup/dropdown con query propia, sin relacion de tabla, para no afectar otros formularios que usan el mismo datasource.
+- Patron: clase `GRW<Formulario>_<CodigoModelo>_EventHandler` con metodos `public static void` y atributo `[FormControlEventHandler(formControlStr(<Formulario>, <Control>), FormControlEventType::Lookup)]`. El nombre del control es el de la extension del formulario (ej. `DirPartyTable_GRWTaxRegimeCode`), no el campo de la tabla.
+- Cuerpo: `SysTableLookup::newParameters(tableNum(<Tabla>), sender)`, `Query` con `QueryBuildDataSource` y rangos, `addLookupfield(<campo clave>, true)` y campos descriptivos, `parmQuery`, `performFormLookup()`.
+- **Cancelar el lookup estandar:** el segundo argumento del evento Lookup se convierte a `FormControlCancelableSuperEventArgs` (NO `FormControlCancelEventArgs`, que devuelve null) y se llama a `CancelSuperCall()` despues de `performFormLookup()`. Referencia validada por el usuario: `GRWInventParameters_Frm_EventHandler` (modelo GRWGDP_002_StatusClasification), metodo `GRWClasificaction8020_GRWClasification8020_OnLookup`.
+- Metodo de apoyo compartido: se puede extraer la logica a un `private static` que reciba el control, el `FormControlCancelableSuperEventArgs` y el filtro; cada handler lo llama con su filtro (ej. `EInvoiceExtCodeType_MX::TaxRegime` o `::Purpose`). No validado en compilacion.
+- El lookup solo ayuda a elegir: no valida el valor tecleado. La validacion va en la tabla o en el CoC correspondiente.
+- Un handler cubre un solo formulario. Si el campo aparece en otro formulario del mismo datasource (ej. `DirPartyQuickCreateForm` frente al formulario completo del party), hace falta otro handler.
+- Escribir el XML del AxClass en el modelo por el flujo de `d365fo-errores-encontrados` (CASO-002) y registrarlo en el `.rnrproj`.

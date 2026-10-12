@@ -29,3 +29,12 @@ Investiga cómo está construida la solución actual y presenta evidencia antes 
 ## Entrega
 
 Resume arquitectura relevante, flujo actual, objetos controladores, dependencias, convenciones y riesgos. Incluye rutas/nombres exactos como evidencia cuando el entorno permita inspeccionarlos. Propón el cambio mínimo compatible con la solución existente. No hagas cambios ni atribuyas problemas al código sin evidencia.
+
+## Reglas aprendidas: documentar objetos del modelo
+
+- Formato pedido por el usuario: `.txt` con tablas separadas por tabuladores, listas para pegar. Tabla 1: `Nombre<TAB>Tipo` con los objetos del modelo, SIN privilegios (ej. `EcoResProduct.GRWGDP_001_ProductDesc<TAB>Table Extension`). Tabla 2: `Etiqueta<TAB>Nombre<TAB>Nivel` solo para privilegios, con la etiqueta en espanol.
+- Cómo obtenerlo: listar los archivos de cada carpeta `Ax*` del modelo en `K:\AosService\PackagesLocalDirectory\<Modelo>\<Modelo>` (solo las que tienen archivos); el nombre es el `BaseName`. Las etiquetas aparecen como un objeto unico por archivo de etiquetas (ej. `CXC99`), no uno por idioma.
+- Tipos usados: Class Extension, Data Entity, Data Entity Extension, Enum, Form, Form Extension, Label File, Menu Extension, Menu Item Display, Table, Table Extension, Edt Extension, entre otros segun la carpeta.
+- Etiqueta de privilegios: resolver `@<Archivo>:<Id>` en el `.label.txt` es-MX del modelo. Nivel deducido del nombre: `...Maintain` es Eliminacion (Create/Delete/Read/Update) y `...View` es Lectura; confirmar leyendo las concesiones del privilegio.
+- Escribir el `.txt` en UTF-8 con BOM para conservar acentos. Guardarlo en `Entregables_Skills` del proyecto; si ya existe, anadir sufijo de fecha/hora.
+- Ejemplo: `Documentacion_Objetos_GRWCXC_99_CustFiscalInfo.txt`: 20 objetos y 8 privilegios.

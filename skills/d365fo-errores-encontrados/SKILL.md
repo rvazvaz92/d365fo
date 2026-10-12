@@ -96,3 +96,26 @@ Antes de agregar una entrada, busca duplicados y enlaza casos relacionados. Cons
 - **Ojo:** una sola linea sin saltos compila, pero el estandar usa tabulaciones, CRLF y BOM; preferir ese formato. Tras escribir, verificar con `get_file` o `ReadAllText` y con `XmlDocument.Load`.
 - **Preferido:** el flujo de CASO-002 (`create_file` en %TEMP% + `Copy-Item -Force`).
 - **Etiquetas:** PowerShell, WriteAllText, rnrproj.
+
+### CASO-006: .rnrproj no carga por linea en blanco antes de <?xml
+- **Modelo/objeto:** `GRWCXC_99_CustFiscalInfo`, archivo `.rnrproj`.
+- **Sintoma:** Visual Studio no podia cargar los objetos del proyecto.
+- **Causa raiz (confirmada):** al registrar clases con PowerShell quedo un salto de linea (`13,10`) entre el BOM y `<?xml`. `XmlDocument.Load` devolvia "Unexpected XML declaration. The XML declaration must be the first node in the document".
+- **Solucion:** `TrimStart([char]0xFEFF, "`r", "`n", " ")` sobre el texto y `WriteAllText` con `UTF8Encoding($true)`; verificar con `XmlDocument.Load` y con los primeros bytes (`239,187,191,60,63,120`).
+- **Prevencion:** tras tocar un `.rnrproj` o AxClass por script, cargarlo siempre con `XmlDocument.Load` y comprobar que no haya entradas duplicadas ni apuntando a archivos inexistentes. Las etiquetas `.txt` del proyecto estan en `AxLabelFile\LabelResources`, no en la carpeta del tipo.
+- **Validacion:** el proyecto cargo como XML valido. No se confirmo la carga en Visual Studio.
+- **Etiquetas:** rnrproj, BOM, XML, PowerShell.
+
+### CASO-007: $env:TEMP apunta a Temp\2 y archivos temporales no encontrados
+- **Sintoma:** un script copiaba un XML desde `$env:TEMP` al modelo y fallaba con "Could not find file ...\Temp\2\<archivo>"; el destino quedo vacio y `XmlDocument.Load` dio "Root element is missing".
+- **Causa (confirmada):** `create_file` guardo en `C:\Users\<usuario>\AppData\Local\Temp\`, pero en el terminal `$env:TEMP` apuntaba a `...\Temp\2\`.
+- **Solucion:** usar la ruta absoluta `C:\Users\<usuario>\AppData\Local\Temp\<archivo>` en lugar de `$env:TEMP`; comprobar que el destino no quedo vacio.
+- **Etiquetas:** PowerShell, TEMP, create_file.
+
+### CASO-008: Compilacion con "A reference to Dynamics.AX.Retail is required" en CoC de SalesTable
+- **Contexto:** CoC `[ExtensionOf(tableStr(SalesTable))]` con `validateWrite`, modelo con `Retail` en `ModuleReferences` del descriptor.
+- **Sintoma:** `A reference to 'Dynamics.AX.Retail, Version=0.0.0.0...' is required to compile this module`.
+- **Causa:** NO confirmada. Hipotesis: `SalesTable` tiene extensiones del modulo Retail y el proyecto no referencia ese ensamblado, o cache del proyecto.
+- **Que no hacer:** sustituir el CoC por un event handler sin permiso del usuario (ver regla en `d365fo-clases-class`). Se hizo una vez y el usuario lo rechazo.
+- **Pendiente:** confirmar si el error desaparece al agregar la referencia/Rebuild. Un `.xpp` residual en `bin\XppSource\<Modelo>` no debe editarse a mano.
+- **Etiquetas:** CoC, SalesTable, Retail, referencia.

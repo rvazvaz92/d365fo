@@ -75,3 +75,11 @@ Los métodos `display` de la tabla alimentan campos calculados en formularios. E
 - Table.validateWrite y validateField se ejecutan en formularios, X++, OData, Excel y DMF; en DMF depende de "Run business validations" en Entity structure. Si validateField falla, validateWrite no se llama.
 - Registrar cada extension en el .rnrproj: Content Include="AxTableExtension\<Nombre>" con Link Table Extensions\<Nombre>.
 - En la staging de una entidad estandar, el campo lleva el mismo nombre y el mismo EDT que en la entidad.
+
+## Reglas aprendidas: campos fiscales en DirPartyTable
+
+- El formulario de creacion rapida de cliente (`DirPartyQuickCreateForm`) trabaja sobre `DirPartyTable`, no sobre `CustTable`: los datos propios del cliente no existen aun al capturar. Para capturarlos en ese formulario, agregarlos como campos de una extension de `DirPartyTable` y leerlos despues desde `CustTable`.
+- Caso (GRWCXC_99_CustFiscalInfo): campos `GRWRfc_MX`, `GRWTaxRegimeCode` y `GRWCFDIPurposeCode` en `DirPartyTable`. `GRWRfc_MX` usa `IgnoreEDTRelation = Yes`.
+- Decision del usuario: NO relacionar los campos de regimen y uso CFDI con su tabla de catalogo para no afectar otros formularios donde se use `DirPartyTable`; el dropdown se resuelve con un lookup por event handler (ver `d365fo-formularios-form`).
+- Sin relacion no hay validacion automatica del valor: validar contra el catalogo en el CoC.
+- Orden en el alta de cliente: `CustTable.insert` crea el party con `DirPartyTable::createNew(tipo, nombre)` y solo despues existe el cliente; ver `d365fo-clases-class` para validar y guardar.

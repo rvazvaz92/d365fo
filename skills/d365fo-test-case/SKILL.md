@@ -39,3 +39,25 @@ Incluye ID, criterio relacionado, objetivo, prioridad, precondiciones, rol/compa
 ## Reglas
 
 No conviertas una expectativa ambigua en un resultado esperado inventado: registra la pregunta abierta. Evita pasos vagos como “validar que funciona”. Señala datos destructivos o ambientes compartidos y no ejecutes operaciones de producción sin autorización explícita.
+
+## Casos registrados: validacion fiscal al confirmar orden de venta
+
+- **Modelo:** GRWCXC_99_CustFiscalInfo. **Objetos:** GRWSalesFormLetter_CXC_99_Extension (CoC de SalesFormLetter.validate), GRWSalesTable_CXC_99_Extension (validateWrite y grwValidateCustomerFiscalData), GRWCustFiscalData (existsCombination), CustParameters.GRWCustFiscalValidate. Sin compilar ni probar en ejecucion.
+- **Regla del codigo a probar:** con el parametro en Si, al confirmar una orden se valida, por cada orden seleccionada, que el cliente tenga RFC, regimen fiscal y uso CFDI, y que la combinacion exista en GRWCustFiscalData. Si falla, mensaje CXC99_043 y se bloquea la confirmacion. Con el parametro en No, no se valida.
+- **Dato tecnico que afecta el diseno de pruebas:** en SalesFormLetter, documentStatus() devuelve el tipo de documento que se registra (SalesFormLetter_Confirm devuelve DocumentStatus::Confirmation), no el estado de la orden. El estado de la orden esta en SalesTable.SalesStatus y el ultimo documento registrado en SalesTable.DocumentStatus. No asumir que la orden ya esta confirmada cuando se ejecuta la validacion.
+- **Pregunta abierta (sin respuesta del usuario):** la validacion debe aplicarse solo a ordenes en estado Backorder aun no confirmadas, o siempre que se confirme, incluida una reconfirmacion. No definir resultado esperado para la reconfirmacion hasta que se responda.
+
+**Casos a disenar (completar IDs, datos y pasos con el formato por caso):**
+
+1. Parametro en Si, cliente con RFC, regimen y uso CFDI validos y combinacion existente en GRWCustFiscalData: la confirmacion se completa.
+2. Parametro en Si, cliente sin RFC: se bloquea la confirmacion y se muestra el mensaje CXC99_043.
+3. Parametro en Si, cliente sin regimen fiscal o sin uso CFDI: se bloquea y se muestra CXC99_043.
+4. Parametro en Si, cliente con regimen y uso CFDI que no forman una combinacion de GRWCustFiscalData: se bloquea y se muestra CXC99_043.
+5. Cliente con varias combinaciones en GRWCustFiscalData y una coincide con sus datos: la confirmacion se completa.
+6. Parametro en No, cliente sin datos fiscales: la confirmacion se completa sin mensaje.
+7. Confirmar varias ordenes a la vez, una con cliente invalido: se muestra el error y no se confirma ninguna. Verificar si se confirman las validas (pregunta abierta: comportamiento esperado).
+8. Crear una orden de venta con parametro en Si y cliente invalido: segun GRWSalesTable_CXC_99_Extension.validateWrite se bloquea el guardado. Verificar tambien al modificar una orden existente.
+9. Orden en estado Backorder frente a orden ya confirmada (reconfirmacion): resultado esperado pendiente de la pregunta abierta.
+10. Otros documentos (lista de picking, albaran, factura) con cliente invalido: no se valida en la confirmacion; confirmar el comportamiento esperado antes de fijar el resultado.
+11. Rol sin permiso sobre CustParameters o GRWCustFiscalData: verificar que el resultado de la validacion no cambia segun el rol.
+12. Dos compañias con datos fiscales distintos: la validacion usa los datos de la compañia actual.
