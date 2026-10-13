@@ -45,3 +45,13 @@ Convierte DDF e historias de usuario en requerimientos claros, trazables y verif
 - Trazabilidad entre cada historia/requisito y sus criterios.
 
 Mantén el lenguaje del negocio y separa claramente lo explícito de lo inferido. Aún no diseñes ni escribas código X++ salvo que el usuario lo solicite.
+
+## Reglas aprendidas: seguimiento de la logica del requerimiento
+
+- Un requerimiento describe lo que el usuario debe poder hacer, no el punto tecnico donde se captura. Antes de implementar, reconstruir el flujo de punta a punta: por donde se crea o modifica realmente el registro, en que tabla trabaja cada formulario y en que orden se insertan las tablas.
+- Caso (GRWCXC_99_CustFiscalInfo): el requerimiento pedia validar RFC, regimen fiscal y uso CFDI al crear o modificar un cliente. Se implemento la validacion en `CustTable`, pero el alta rapida de cliente (`DirPartyQuickCreateForm`) trabaja sobre `DirPartyTable`, que se inserta antes que el cliente; los datos fiscales no existian al capturar. Hubo que agregar campos a `DirPartyTable`, una extension del formulario, un lookup por event handler y validar despues del `next insert`.
+- Esos cambios no estaban en el requerimiento original. Cada vez que la implementacion exija objetos o formularios que el requerimiento no menciona, registrarlo como **cambio de alcance** y avisar a consultoria o al responsable funcional antes de construirlo, no despues. Quedo como control de cambios de consultoria.
+- Preguntar al inicio, por cada dato requerido: en que pantalla se captura, quien lo captura, si existen varias pantallas de alta (formulario completo, creacion rapida, importacion masiva por entidad) y en que tabla vive cada una.
+- Incluir en el analisis los puntos de entrada alternativos al mismo dato (alta rapida, alta completa, carga por entidad de datos, integraciones) y marcar cuales quedan cubiertos y cuales no.
+- Contrastar cada criterio de aceptacion con el flujo tecnico real: si un criterio dice "antes de guardar", confirmar que el dato existe en ese momento.
+- Los pendientes sin respuesta (por ejemplo, filtrar por estado de la orden o validar siempre al confirmar) se registran como preguntas abiertas y no se resuelven por suposicion.

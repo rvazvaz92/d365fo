@@ -83,3 +83,459 @@ Los métodos `display` de la tabla alimentan campos calculados en formularios. E
 - Decision del usuario: NO relacionar los campos de regimen y uso CFDI con su tabla de catalogo para no afectar otros formularios donde se use `DirPartyTable`; el dropdown se resuelve con un lookup por event handler (ver `d365fo-formularios-form`).
 - Sin relacion no hay validacion automatica del valor: validar contra el catalogo en el CoC.
 - Orden en el alta de cliente: `CustTable.insert` crea el party con `DirPartyTable::createNew(tipo, nombre)` y solo despues existe el cliente; ver `d365fo-clases-class` para validar y guardar.
+
+## Aportes del merge (d365fo-tablas)
+
+Sigue las reglas de .github/copilot-instructions.md.
+
+### Primer paso obligatorio
+Pregunta siempre al usuario en qué modelo deben crearse los objetos, aunque el proyecto ya tenga uno. La ruta base es `K:\AosService\PackagesLocalDirectory\<Modelo>\<Modelo>\` (el modelo aparece dos veces). No asumas `GRWEstevez`.
+Localiza el `.rnrproj` de la solución en curso y compara su `<Model>` con el modelo indicado. Si no coinciden, avisa al usuario y pide confirmación antes de crear nada.
+
+### Referencia estándar
+Para confirmar nombres de tablas, campos, EDT y enums estándar, búscalos en `K:\AosService\PackagesLocalDirectory\ApplicationSuite\Foundation\` (carpetas `AxTable`, `AxEdt`, `AxEnum`, `AxDataEntityView`). Los archivos son enormes (`SalesTable.xml` supera las 23 000 líneas): no los leas completos; usa `Select-String -Pattern "<Name>Campo</Name>" -Context 0,6` y lecturas con `Select-Object -Skip N -First M`.
+Objetos ya verificados para OVE_11: tabla `SalesTable`; campo `PurchOrderFormNum` (string, EDT `CustPurchaseOrder`, longitud 20); campos `SalesId` y `CustAccount`; métodos `validateWrite`, `validateField` y `modifiedField`.
+Otro modelo de referencia con entidades, staging y privilegios: `K:\AosService\PackagesLocalDirectory\GrowCFDIAddonLoad\Grow CFDI Addon Load\`.
+
+### Carpetas y archivos
+| Objeto | Carpeta | Archivo |
+|---|---|---|
+| Tabla nueva | `AxTable` | `GRW<Nombre>.xml` |
+| Extensión de tabla | `AxTableExtension` | `<TablaEstandar>.<Modelo>.xml` |
+| EDT nuevo | `AxEdt` | `GRW<Nombre>.xml` |
+| Extensión de EDT | `AxEdtExtension` | `<EDTEstandar>.<Modelo>.xml` |
+| Enum nuevo | `AxEnum` | `GRW<Nombre>.xml` |
+| Extensión de enum | `AxEnumExtension` | `<EnumEstandar>.<Modelo>.xml` |
+
+### Reglas
+1. Objetos nuevos y campos nuevos en extensiones llevan prefijo `GRW` (ejemplo: `GRWEnableProductCatalog` en `CustTable.GRWEstevez`).
+2. Una extensión nunca modifica el objeto estándar; solo agrega campos, índices, relaciones o modificaciones de propiedades.
+3. Etiquetas y `HelpText` salen del archivo de labels del requerimiento (`@GRW<Req>:<LabelId>`, ver skill `d365fo-labels`). Si faltan, genera primero las etiquetas.
+4. Todo campo (en tabla nueva o en extensión) debe llevar un EDT en `<ExtendedDataType>`, incluidos los campos enum (por ejemplo `NoYesId` con `<EnumType>NoYes</EnumType>`). Excepción: en campos enum cuyo enum no tiene EDT asociado (ejemplo real del modelo CFDI: `EInvoiceCFDIVersion_MX`) basta `<EnumType>`. Nunca dejes sin EDT un campo string, int, real o date. Procedimiento para elegirlo:
+   1. Define las características del campo: tipo (string, int, real, date, enum…), longitud o decimales, y significado de negocio.
+   2. Busca un EDT existente que coincida (estándar o `GRW*` del modelo) en tipo, tamaño y significado. Reutiliza el EDT del campo equivalente en la tabla estándar relacionada (por ejemplo, `CustAccount` para cuenta de cliente, `SalesId` para orden de venta).
+   3. Si hay candidatos, elige el más específico y confirma con el usuario cuando haya duda.
+   4. Si ninguno se adapta, crea un EDT nuevo `GRW<Nombre>` (o una extensión de EDT si solo cambia una propiedad), con la etiqueta del archivo `GRW<Req>`, antes de crear el campo.
+   5. Marca con ⚠️ los EDT estándar cuyo nombre no puedas confirmar.
+5. Si el objeto ya existe, no lo recrees: léelo y complementa con `replace_string_in_file`. Verifica antes con `file_search` por nombre.
+6. Un archivo por llamada de `create_file`; las llamadas independientes van en paralelo. No uses comandos de PowerShell recursivos (se agota el tiempo de espera).
+7. Si `create_file` falla con "Could not get text view from file path", escribe el archivo con PowerShell en UTF-8 sin BOM (`[IO.File]::WriteAllText($p,$t,(New-Object Text.UTF8Encoding $false))`) y verifica después que no haya caracteres dañados. Si tampoco es posible, entrega el XML al usuario.
+   La herramienta de lectura de archivos no accede a `K:`; para leer el modelo usa la terminal en bloques cortos (`(Get-Content <ruta> -TotalCount 60) -join "`n"`), porque los archivos grandes pueden hacer fallar la terminal.
+8. Agrega al `.rnrproj` de la solución en curso cada objeto creado (tabla, extensión, EDT, enum, entidad, vista) y sus labels (ver skill `d365fo-labels`). Edita el `.rnrproj` con `replace_string_in_file`, dentro de un `<ItemGroup>`, sin duplicar entradas existentes y sin la extensión `.xml`:
+```xml
+<Content Include="AxTable\<Objeto>">
+  <SubType>Content</SubType>
+  <Name><Objeto></Name>
+  <Link><CarpetaVirtual>\<Objeto></Link>
+</Content>
+```
+   `<CarpetaVirtual>` es la carpeta del proyecto de Visual Studio, no la del modelo. Formato verificado en un `.rnrproj` real: `Classes\` para clases y `Label Files\` para labels (con su `<Folder Include="...\" />`); para otros tipos copia la de una entrada existente. Cambia `AxTable` por la carpeta del objeto
+9. Si no estás seguro de un nombre de tabla, campo o EDT estándar, márcalo con ⚠️ y pregunta.
+10. Al terminar, pide abrir el objeto en Visual Studio y compilar antes de darlo por terminado.
+
+### Buenas prácticas obligatorias
+Todo objeto generado debe cumplirlas antes de entregarse. Revísalas al terminar cada archivo.
+Todo método X++ lleva además, dentro de su comentario `///`, la etiqueta `<remarks>Autor: Jorge Eduardo Vargas Rayas | Fecha: AAAA-MM-DD | Versión D365FO: 10.0.48</remarks>` (regla de .github/copilot-instructions.md). La fecha es la del día de generación. Aplica también a las plantillas de este skill aunque no la muestren.
+1. **Nombres en inglés siempre:** tablas, campos, EDTs, enums, valores de enum, índices, relaciones y métodos. Sin nombres en español ni mezclados. Solo los textos de etiquetas (`.label.txt`) van en es-MX y en-US.
+2. **Convenciones de nombres:** PascalCase para objetos, campos, índices y relaciones; prefijo `GRW` en objetos nuevos y en campos nuevos de extensiones; nombres descriptivos y sin abreviaturas ambiguas. Índices con sufijo `Idx` (ejemplo: `CustomerOrderIdx`).
+3. **Documentación:** todo campo lleva `Label` y, cuando el usuario lo ve, `HelpText`, ambos desde etiquetas. Cada tabla lleva `Label`. Los métodos de tabla (`find`, `exist`, `validateWrite`, etc.) llevan comentario `///` con `<summary>`, `<param>` y `<returns>`, escrito en inglés.
+4. **Indentación correcta:** tabuladores en el XML como en las plantillas; 4 espacios por nivel en el código X++ de los métodos, llaves en línea propia y una línea en blanco entre bloques lógicos.
+5. **Estructura de tabla nueva:** incluye `TitleField1`, `PrimaryIndex`, un índice único (`AlternateKey`) cuando haya clave de negocio, relaciones hacia las tablas que referencia y los grupos de campos automáticos de la plantilla.
+6. **Código limpio:** sin código comentado, sin textos fijos (usa etiquetas), sin variables sin usar. Para validaciones usa `checkFailed` en vez de `throw error`, salvo que el diseño pida abortar.
+7. **Validación final:** antes de entregar, confirma que todo campo tiene EDT y etiqueta, que no hay nombres en español y que los métodos están documentados; indica el resultado en la tabla de salida.
+
+### Plantillas (tomadas de objetos reales del modelo)
+
+#### Enum nuevo
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<AxEnum xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <Name>GRW<Nombre></Name>
+    <Label>@GRW<Req>:<LabelId></Label>
+    <UseEnumValue>No</UseEnumValue>
+    <EnumValues>
+        <AxEnumValue>
+            <Name><Valor1></Name>
+            <Label>@GRW<Req>:<LabelId1></Label>
+        </AxEnumValue>
+        <AxEnumValue>
+            <Name><Valor2></Name>
+            <Label>@GRW<Req>:<LabelId2></Label>
+            <Value>1</Value>
+        </AxEnumValue>
+    </EnumValues>
+    <IsExtensible>true</IsExtensible>
+</AxEnum>
+```
+El primer valor no lleva `<Value>`; los siguientes llevan 1, 2, 3...
+
+#### EDT nuevo (string)
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<AxEdt xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns=""
+    i:type="AxEdtString">
+    <Name>GRW<Nombre></Name>
+    <Label>@GRW<Req>:<LabelId></Label>
+    <ArrayElements />
+    <Relations />
+    <TableReferences />
+    <StringSize>30</StringSize>
+</AxEdt>
+```
+Para otros tipos cambia `i:type` (por ejemplo `AxEdtInt`, `AxEdtDate`) y ajusta las propiedades del tipo.
+
+#### Extensión de EDT
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<AxEdtExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <Name><EDTEstandar>.<Modelo></Name>
+    <ArrayElements />
+    <PropertyModifications>
+        <AxPropertyModification>
+            <Name><Propiedad></Name>
+            <Value><Valor></Value>
+        </AxPropertyModification>
+    </PropertyModifications>
+</AxEdtExtension>
+```
+
+#### Extensión de tabla
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<AxTableExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <Name><TablaEstandar>.<Modelo></Name>
+    <FieldGroupExtensions />
+    <FieldGroups />
+    <FieldModifications />
+    <Fields>
+        <AxTableField xmlns=""
+            i:type="AxTableFieldString">
+            <Name>GRW<Campo></Name>
+            <ExtendedDataType><EDT></ExtendedDataType>
+            <IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+            <Label>@GRW<Req>:<LabelId></Label>
+        </AxTableField>
+        <AxTableField xmlns=""
+            i:type="AxTableFieldEnum">
+            <Name>GRW<CampoEnum></Name>
+            <ExtendedDataType><EDTdelEnum></ExtendedDataType>
+            <IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+            <Label>@GRW<Req>:<LabelId></Label>
+            <EnumType><Enum></EnumType>
+        </AxTableField>
+    </Fields>
+    <FullTextIndexes />
+    <Indexes />
+    <Mappings />
+    <PropertyModifications />
+    <RelationExtensions />
+    <RelationModifications />
+    <Relations />
+</AxTableExtension>
+```
+Tipos de campo (`i:type`): `AxTableFieldString`, `AxTableFieldInt`, `AxTableFieldDate`, `AxTableFieldEnum`, entre otros. Todos los campos llevan `<ExtendedDataType>`. En campos enum, el EDT es el del enum (por ejemplo `NoYesId` para `NoYes`) y se mantiene `<EnumType>`.
+
+Relación en extensión (clave foránea):
+```xml
+<AxTableRelation xmlns=""
+    i:type="AxTableRelationForeignKey">
+    <Name>GRW<RelacionNombre></Name>
+    <Cardinality>ZeroMore</Cardinality>
+    <RelatedTable><TablaRelacionada></RelatedTable>
+    <RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+    <RelationshipType>Association</RelationshipType>
+    <Constraints>
+        <AxTableRelationConstraint xmlns=""
+            i:type="AxTableRelationConstraintField">
+            <Name>GRW<Campo></Name>
+            <Field>GRW<Campo></Field>
+            <RelatedField><CampoRelacionado></RelatedField>
+        </AxTableRelationConstraint>
+    </Constraints>
+    <Index><IndiceDeLaTablaRelacionada></Index>
+</AxTableRelation>
+```
+Los índices nuevos van dentro de `<Indexes>` con `AxTableIndex`, `<Name>` y `<Fields>` de `AxTableIndexField` (`<DataField>`).
+
+#### Tabla nueva
+Estructura base (ejemplo real `GRWCountriesOfOrigin`):
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <Name>GRW<Nombre></Name>
+    <SourceCode>
+        <Declaration><![CDATA[
+public class GRW<Nombre> extends common
+{
+}
+]]></Declaration>
+        <Methods />
+    </SourceCode>
+    <Label>@GRW<Req>:<LabelId></Label>
+    <SubscriberAccessLevel>
+        <Read>Allow</Read>
+    </SubscriberAccessLevel>
+    <TitleField1><Campo1></TitleField1>
+    <TitleField2><Campo2></TitleField2>
+    <AllowRowVersionChangeTracking>Yes</AllowRowVersionChangeTracking>
+    <ModifiedDateTime>Yes</ModifiedDateTime>
+    <PrimaryIndex><Indice></PrimaryIndex>
+    <DeleteActions />
+    <FieldGroups>
+        <AxTableFieldGroup>
+            <Name>AutoReport</Name>
+            <Fields />
+        </AxTableFieldGroup>
+        <AxTableFieldGroup>
+            <Name>AutoLookup</Name>
+            <Fields />
+        </AxTableFieldGroup>
+        <AxTableFieldGroup>
+            <Name>AutoIdentification</Name>
+            <AutoPopulate>Yes</AutoPopulate>
+            <Fields />
+        </AxTableFieldGroup>
+        <AxTableFieldGroup>
+            <Name>AutoSummary</Name>
+            <Fields />
+        </AxTableFieldGroup>
+        <AxTableFieldGroup>
+            <Name>AutoBrowse</Name>
+            <Fields />
+        </AxTableFieldGroup>
+    </FieldGroups>
+    <Fields>
+        <AxTableField xmlns=""
+            i:type="AxTableFieldString">
+            <Name><Campo></Name>
+            <ExtendedDataType><EDT></ExtendedDataType>
+            <HelpText>@GRW<Req>:<LabelId></HelpText>
+            <Label>@GRW<Req>:<LabelId></Label>
+            <Mandatory>Yes</Mandatory>
+        </AxTableField>
+    </Fields>
+    <FullTextIndexes />
+    <Indexes>
+        <AxTableIndex>
+            <Name><Indice></Name>
+            <AlternateKey>Yes</AlternateKey>
+            <Fields>
+                <AxTableIndexField>
+                    <DataField><Campo></DataField>
+                </AxTableIndexField>
+            </Fields>
+        </AxTableIndex>
+    </Indexes>
+    <Mappings />
+    <Relations />
+    <StateMachines />
+</AxTable>
+```
+Métodos habituales en las tablas del modelo (`find`, `validateWrite`, `validateDelete`, `modifiedField`, `initValue`): decláralos dentro de `<Methods>` con el bloque `<Method><Name>…</Name><Source><![CDATA[…]]></Source></Method>` y comentarios `///`. Si la tabla tiene validaciones con `throw error`, prefiere `checkFailed` para no abortar la transacción, salvo que el diseño pida lo contrario.
+
+### Referencia del modelo GRWEstevez
+Antes de crear un objeto, verifica que no exista ya en `K:\AosService\PackagesLocalDirectory\GRWEstevez\GRWEstevez` y reutiliza lo existente.
+1. **Tablas** (`AxTable`): `GRWMinimumDTASetup`, `GRWCountriesOfOrigin`, `GRWPackagingLabel`, además de tablas `Staging` y `Tmp`.
+2. **Extensiones de tabla** (`AxTableExtension`, nombre `<Tabla>.GRWEstevez`): `SalesTable`, `SalesLine`, `CustTable`, entre otras.
+3. **EDT** (`AxEdt`): `GRWObservation`, `GRWCountryOfOrigin`, `GRWCustom`, entre otros. Extensiones de EDT (`AxEdtExtension`): `PriceDiscAmount.GRWEstevez`, `UnitAmountCur.GRWEstevez`.
+4. **Enums** (`AxEnum`): `GRWTrimesters`, `GRWProformaTypeReport`.
+5. **Entidades** (`AxDataEntityView`): `GRWSalesTableEntity`, `GRWCountriesOfOriginEntity`. Extensiones de entidad (`AxDataEntityViewExtension`): `SalesOrderHeaderV4Entity.GRWEstevez`.
+6. **Vistas** (`AxView`): `GRWCustomerView`, `GRWSalesTable_ProjRel`.
+
+Hallazgos del modelo real:
+- Los campos de extensión con EDT estándar suelen llevar `<IgnoreEDTRelation>Yes</IgnoreEDTRelation>`. Úsalo cuando el campo no deba heredar la relación del EDT.
+- Algunos objetos usan `throw error` y comentarios `///` vacíos. No lo repitas: sigue las buenas prácticas de este skill.
+- Evita literales con acentos en `#define`; se dañan al guardar. Usa etiquetas.
+- Los IDs de archivos de labels del modelo son mixtos (`GRW_CDE_02`, `GRWINV05`, `GRWOVE_11`). Usa siempre el del requerimiento actual (ver skill `d365fo-labels`).
+
+### Plantillas adicionales
+
+#### Extensión de EDT
+Ejemplo real (`UnitAmountCur.GRWEstevez`, cambia los decimales):
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<AxEdtExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <Name><Edt>.GRWEstevez</Name>
+    <ArrayElements />
+    <PropertyModifications>
+        <AxPropertyModification>
+            <Name><Propiedad></Name>
+            <Value><Valor></Value>
+        </AxPropertyModification>
+    </PropertyModifications>
+</AxEdtExtension>
+```
+
+#### EDT nuevo de tipo string
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<AxEdt xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns=""
+    i:type="AxEdtString">
+    <Name>GRW<Nombre></Name>
+    <Label>@GRW<Req>:<LabelId></Label>
+    <ArrayElements />
+    <Relations />
+    <TableReferences />
+    <StringSize><Longitud></StringSize>
+</AxEdt>
+```
+
+#### Enum nuevo
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<AxEnum xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <Name>GRW<Nombre></Name>
+    <Label>@GRW<Req>:<LabelId></Label>
+    <UseEnumValue>No</UseEnumValue>
+    <EnumValues>
+        <AxEnumValue>
+            <Name><Valor></Name>
+            <Label>@GRW<Req>:<LabelId></Label>
+        </AxEnumValue>
+    </EnumValues>
+    <IsExtensible>true</IsExtensible>
+</AxEnum>
+```
+
+#### Extensión de entidad de datos
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<AxDataEntityViewExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <Name><Entidad>.GRWEstevez</Name>
+    <DataSources />
+    <FieldGroupExtensions />
+    <FieldGroups />
+    <FieldModifications />
+    <Fields>
+        <AxDataEntityViewField xmlns=""
+            i:type="AxDataEntityViewMappedField">
+            <Name>GRW<Campo></Name>
+            <DataField>GRW<Campo></DataField>
+            <DataSource><TablaOrigen></DataSource>
+        </AxDataEntityViewField>
+    </Fields>
+</AxDataEntityViewExtension>
+```
+Si el campo nuevo vive en una extensión de tabla, la entidad lo expone con `AxDataEntityViewMappedField` apuntando a la tabla origen. Si la entidad tiene tabla staging, agrega también el campo en la extensión de la tabla `...Staging`.
+
+#### Entidad de datos nueva
+Estructura real de `GRWCountriesOfOriginEntity` (los grupos de campos automáticos son los mismos de la tabla nueva):
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<AxDataEntityView xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <Name>GRW<Nombre>Entity</Name>
+    <SourceCode>
+        <Declaration><![CDATA[
+public class GRW<Nombre>Entity extends common
+{
+}
+]]></Declaration>
+        <Methods />
+    </SourceCode>
+    <Label>@GRW<Req>:<LabelId></Label>
+    <SubscriberAccessLevel>
+        <Read>Allow</Read>
+    </SubscriberAccessLevel>
+    <DataManagementEnabled>Yes</DataManagementEnabled>
+    <DataManagementStagingTable>GRW<Nombre>Staging</DataManagementStagingTable>
+    <IsPublic>Yes</IsPublic>
+    <PrimaryCompanyContext>DataAreaId</PrimaryCompanyContext>
+    <PrimaryKey>EntityKey</PrimaryKey>
+    <PublicCollectionName><Coleccion></PublicCollectionName>
+    <PublicEntityName><Entidad></PublicEntityName>
+    <SupportsSetBasedSqlOperations>Yes</SupportsSetBasedSqlOperations>
+    <DeleteActions />
+    <FieldGroups>
+        <AxTableFieldGroup>
+            <Name>AutoReport</Name>
+            <Fields />
+        </AxTableFieldGroup>
+        <AxTableFieldGroup>
+            <Name>AutoLookup</Name>
+            <Fields />
+        </AxTableFieldGroup>
+        <AxTableFieldGroup>
+            <Name>AutoIdentification</Name>
+            <AutoPopulate>Yes</AutoPopulate>
+            <Fields />
+        </AxTableFieldGroup>
+        <AxTableFieldGroup>
+            <Name>AutoSummary</Name>
+            <Fields />
+        </AxTableFieldGroup>
+        <AxTableFieldGroup>
+            <Name>AutoBrowse</Name>
+            <Fields />
+        </AxTableFieldGroup>
+    </FieldGroups>
+    <Fields>
+        <AxDataEntityViewField xmlns=""
+            i:type="AxDataEntityViewMappedField">
+            <Name><Campo></Name>
+            <DataField><Campo></DataField>
+            <DataSource>GRW<Tabla></DataSource>
+        </AxDataEntityViewField>
+    </Fields>
+    <Keys>
+        <AxDataEntityViewKey>
+            <Name>EntityKey</Name>
+            <Fields>
+                <AxDataEntityViewKeyField>
+                    <DataField><CampoClave></DataField>
+                </AxDataEntityViewKeyField>
+            </Fields>
+        </AxDataEntityViewKey>
+    </Keys>
+    <Mappings />
+    <Ranges />
+    <Relations />
+    <StateMachines />
+    <ViewMetadata>
+        <Name>Metadata</Name>
+        <SourceCode>
+            <Methods>
+                <Method>
+                    <Name>classDeclaration</Name>
+                    <Source><![CDATA[
+[Query]
+public class Metadata extends QueryRun
+{
+}
+]]></Source>
+                </Method>
+            </Methods>
+        </SourceCode>
+        <DataSources>
+            <AxQuerySimpleRootDataSource>
+                <Name>GRW<Tabla></Name>
+                <DynamicFields>Yes</DynamicFields>
+                <Table>GRW<Tabla></Table>
+                <DataSources />
+                <DerivedDataSources />
+                <Fields />
+                <Ranges />
+                <GroupBy />
+                <Having />
+                <OrderBy />
+            </AxQuerySimpleRootDataSource>
+        </DataSources>
+    </ViewMetadata>
+</AxDataEntityView>
+```
+no copies la lista de campos del ejemplo.
+
+#### Tablas staging
+Las tablas `Staging` (`TableGroup` = `Staging`, `PrimaryIndex`/`ReplacementKey` = `StagingIdx`, campos de sistema `DefinitionGroup`, `ExecutionId`, `IsSelected`, `TransferStatus`) las genera Visual Studio al crear la entidad con **Data management** habilitado. No las escribas a mano. Si un campo nuevo se expone en una entidad, replícalo en la extensión de la tabla staging (`<Entidad>Staging.<Modelo>`), como hace `LedgerJournalEntityStaging.GrowCFDIAddonLoad`.
+
+#### Vista (AxView)
+Estructura real de `GRWCustomerView`: `SourceCode`, `SubscriberAccessLevel`, grupos de campos automáticos, `Fields` con `AxViewFieldBound` (`Name`, `DataField`, `DataSource`), `Indexes`, `Mappings`, `Relations` y `ViewMetadata` con `AxQuerySimpleRootDataSource` y los datasources embebidos (`AxQuerySimpleEmbeddedDataSource`) con su `AxQuerySimpleDataSourceRelation` (`Field`, `JoinDataSource`, `RelatedField`). Usa ese archivo como base.
+
+#### Propiedades que aparecen en el modelo
+- `AssetClassification` (por ejemplo `Customer Content`) aparece en campos estándar; no la inventes en campos nuevos.
+- Mantén el prefijo `GRW` en mayúsculas en campos nuevos (el modelo CFDI tiene `GrwPayment` como excepción, no la repitas).
+
+#### Validación sobre tabla estándar (patrón para esta solución)
+Para validar un campo de una tabla estándar (por ejemplo `SalesTable`), no la modifiques: crea una extensión de clase con CoC sobre `validateWrite` o `validateField` y usa `checkFailed("@GRWOVE_11:<LabelId>")`. Verifica en el modelo si ya existe una extensión de clase para esa tabla antes de crear otra.
+
+### Salida esperada
+Al terminar entrega una tabla: Objeto | Tipo | Archivo | Estado (creado, complementado, ya existía, pendiente) | Etiquetas usadas.

@@ -35,3 +35,23 @@ Analiza la solicitud desde las perspectivas funcional, técnica y operativa. Res
 ## Entrega
 
 Presenta: entendimiento, hallazgos priorizados, oportunidades de mejora, riesgos, preguntas abiertas y una recomendación concreta. No afirmes que una propuesta es compatible con F&O hasta verificar extensibilidad, APIs y convenciones del modelo. No cambies archivos salvo que el usuario pida implementación.
+
+## Aportes del merge (ddf-analisis-d365fo)
+
+Sigue las reglas de .github/copilot-instructions.md y el formato de salida de .github/prompts/ddf-analisis.prompt.md.
+
+Regla absoluta: esta etapa es SOLO de análisis. No crees, edites ni borres archivos; no modifiques el `.rnrproj`; no ejecutes comandos que escriban nada. Solo se permite LEER (DDF, modelos en `K:`, estándar) para fundamentar la propuesta. Ningún proceso de construcción arranca hasta que el usuario apruebe el diseño de forma explícita.
+
+Reglas clave:
+1. No escribas código X++ ni XML en esta etapa.
+2. Propón el mínimo de objetos; lo opcional va aparte.
+3. Verifica en lectura los nombres estándar (`ApplicationSuite\Foundation`, con `Select-String`/`Get-Content -TotalCount`, nunca lecturas completas); si no puedes verificarlos, márcalos con ⚠️.
+4. Antes de proponer un objeto nuevo, busca si ya existe en `GRWEstevez`, `GRWVenegas` o el estándar; si existe, reutilízalo o cítalo como referencia.
+5. Pregunta el modelo destino (por defecto `GRWEstevez`) y confirma la solución/`.rnrproj` en curso (actual: `GRWOVE11_CustomerOrderFieldValidation`).
+6. Máximo 8 preguntas al funcional, solo las que cambian el diseño; marca cada una como "bloquea diseño" o "no bloquea".
+7. Cada objeto propuesto indica la skill que lo construirá: `d365fo-tablas`, `d365fo-formularios`, `d365fo-clases` o `d365fo-reportes`.
+8. Labels: ID `GRW<Req>` con guion bajo (OVE_11 → `GRWOVE_11`), referencia `@GRWOVE_11:<Id>`; el contenido se define con `xpp-labels-d365fo` y los archivos con `d365fo-labels`.
+9. Seguridad: aplica la matriz de `d365fo-privilegios` (tipo de menú, `View`/`Maintain`, permisos) o indica "No aplica" si solo hay tablas/clases/EDT/enums. No propongas duties ni roles.
+10. Validaciones: el flujo indica `checkFailed` y `return false`.
+11. Incluye la trazabilidad Requerimiento → Objeto → Prueba y el plan de construcción por fases.
+12. Termina preguntando si se aprueba el diseño y aclara que NO se ejecutará nada hasta recibir la aprobación. Tras la aprobación continúan `d365fo-requerimiento`/`d365fo-proyecto` y, al final, `ddf-documentacion-tecnica`.
