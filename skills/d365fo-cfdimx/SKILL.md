@@ -83,3 +83,14 @@ Al aprender un objeto nuevo, regístralo en una sección propia, con modelo, nom
 - Guarda toda metadata XML en UTF-8 con BOM (ver `d365fo-tablas-tables`).
 - Para crear formularios de catálogo usa `d365fo-formularios-form` y registra cada caso técnico en `d365fo-errores-encontrados`.
 - Antes de modificar un catálogo SAT, considera el impacto en datos existentes, vigencias y versiones.
+
+## Addendas fiscales por cliente (DDF 65_05)
+
+Origen: DDF_65_05_Coflex_Addendas fiscales (Home Depot, Coppel, activaci�n a nivel cliente; requisito CXC-033).
+
+- Una addenda es un nodo adicional al XML del CFDI, fuera del est�ndar. Su estructura y contenido los define cada cliente y deben reflejarse tal cual.
+- Historias: 65_05_01 Home Depot, 65_05_02 Coppel, 65_05_03 activaci�n de addendas por cliente (par�metro a nivel cliente que decide si se genera la addenda).
+- Antes de desarrollar, obt�n el XML de ejemplo y el mapeo de campos de cada cliente; no supongas nodos ni atributos.
+- Punto de extensi�n: confirma en el c�digo est�ndar la clase real que arma el XML del CFDI y exti�ndela con CoC. No hagas overlayering.
+- Genera la addenda solo si el cliente la tiene activada; sin activaci�n, el XML debe quedar igual al est�ndar.
+- Valida la addenda contra el ejemplo del cliente para evitar rechazos.
