@@ -47,3 +47,11 @@ Por cada formulario custom, dos privilegios ligados a su `MenuItemDisplay`:
 - Registrar cada objeto nuevo en el `.rnrproj`.
 - Asignar los privilegios a un duty y a un rol.
 - No compilar si el usuario pidió revisar antes.
+
+
+## Reglas aprendidas: DDF_65_05 (flujo verificado)
+- Antes de crear: comparar <Model> del .rnrproj con el modelo destino; inventariar el modelo con tamanos (detectar XML de 0 bytes).
+- Flujo de escritura estable: create_file en <solucion>\staging\Ax<Tipo>\<Nombre>.xml -> robocopy staging <proyecto> /E -> robocopy staging <K:\modelo> /E -> validar tamano y [xml]. Ver CASO-011.
+- El .rnrproj se edita solo por PowerShell. Formato: Content Include="Ax<Tipo>\<Nombre>" (sin .xml) + <Name> + <Link>; label.txt con DependentUpon. Ver CASO-010.
+- Plantillas: tomar el XML mas pequeno del mismo tipo de un modelo existente; no generar XML de memoria. Ver CASO-013.
+- Textos largos: create_file + Add-Content; nunca here-strings grandes por terminal. Ver CASO-012.

@@ -130,3 +130,12 @@ Repite para `es-MX`.
 1. Ruta del respaldo creado.
 2. Tabla: Objeto | Tipo | Estado (agregado, ya registrado, no existe en disco, ?? sin plantilla).
 3. Recordatorio: recargar la solución, compilar y revisar el Solution Explorer. Si el proyecto no abre, restaurar el `.bak`.
+
+
+## Reglas aprendidas: formato del .rnrproj (DDF_65_05)
+- Antes de crear objetos, confirmar que <Model> del .rnrproj coincide con el modelo indicado por el usuario; en DDF_65_05 habia dos soluciones (GRW_DDF_6505 y GRW_65_05_TaxAddendums) y los objetos se registraron en la equivocada.
+- Registro de objetos: <Folder Include="Tables\" /> por carpeta virtual y por objeto:
+  <Content Include="AxTable\<Nombre>"><SubType>Content</SubType><Name><Nombre></Name><Link>Tables\<Nombre></Link></Content>
+- Etiquetas: AxLabelFile\<Archivo>_<idioma> con Link "Label Files\..." y <Content Include="<Archivo>.<idioma>.label.txt"> con <DependentUpon>AxLabelFile\<Archivo>_<idioma></DependentUpon>.
+- Nunca rutas fisicas anidadas ni extension .xml (error "Project node name ... is invalid", CASO-010).
+- Verificar que cada entrada del .rnrproj tenga archivo con contenido en K:\AosService\PackagesLocalDirectory\<Modelo>\<Modelo>.

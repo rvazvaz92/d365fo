@@ -61,3 +61,22 @@ No conviertas una expectativa ambigua en un resultado esperado inventado: regist
 10. Otros documentos (lista de picking, albaran, factura) con cliente invalido: no se valida en la confirmacion; confirmar el comportamiento esperado antes de fijar el resultado.
 11. Rol sin permiso sobre CustParameters o GRWCustFiscalData: verificar que el resultado de la validacion no cambia segun el rol.
 12. Dos compañias con datos fiscales distintos: la validacion usa los datos de la compañia actual.
+
+## Regla general: matriz de reglas DDF vs codigo (aplica a TODO DDF)
+
+- Se ejecuta para cada DDF que el usuario indique por nombre, no solo para uno en particular. Si no indica el DDF, preguntarlo.
+- Fuente: el .docx en C:\Users\Admin0e2edd3f30\source\repos\DDF (lectura segun d365fo-requerimiento). Codigo: K:\AosService\PackagesLocalDirectory\<Modelo>\<Modelo> y el .rnrproj de la solucion.
+- Extraer del DDF todas las reglas: campos numerados (tipo, longitud, editable, obligatorio, valor por omision), funcionalidad, seguridad, entidades y cada ID del Script de Pruebas.
+- Matriz: ID regla | Regla | Ref DDF | Objeto(s) en codigo | Estado (CUBIERTO / PARCIAL / NO CUBIERTO / CONFLICTO) | Observacion. Marcar las reglas inferidas como 'Inferido'. Resumen con conteo real por estado.
+- Revisar el XML real de cada objeto: no dar por cubierta una regla solo porque el objeto existe (metodos sin llamador, form sin filtro, longitudes distintas = PARCIAL).
+- Suite: un caso por regla o grupo de reglas, ligado al ID del DDF; marcar BLOQUEADO lo que depende de objetos faltantes o preguntas abiertas; indicar el resultado esperado por codigo cuando se prevea falla.
+- Contradicciones del DDF (campo vs script, flujo vs flujo) van como CONFLICTO y pregunta abierta, nunca resueltas por suposicion.
+- Entregable: Entregables_Skills\03_d365fo-test-case_<MODELO>.txt junto a la solucion del modelo. Ejemplo de referencia: DDF_65_05 / GRW_65_05_TaxAddendums (30 reglas, 18 casos).
+
+## Entregable Word de la matriz (aplica a TODO DDF)
+
+- Ademas del .txt, generar la matriz en Word con el script `Export-MatrizDocx.ps1` (en la carpeta de esta skill). No requiere Office.
+- Entrada: `Entregables_Skills\03_matriz_<MODELO>.psv` en UTF-8, primera linea `ID|Regla|Ref DDF|Objeto(s) en codigo|Estado|Observacion`, una regla por linea (no usar el caracter | dentro del texto).
+- Comando: `powershell -ExecutionPolicy Bypass -File <skill>\Export-MatrizDocx.ps1 -MatrixPath <psv> -OutPath Entregables_Skills\03_Matriz_<DDF>_<MODELO>.docx -Title 'Matriz de reglas DDF vs codigo - <DDF>' -Subtitle 'Modelo: <MODELO> | Fecha: <AAAA-MM-DD> | Estado: <compilado/probado o no>'`.
+- Resultado: hoja horizontal con tabla de resumen por estado y tabla de matriz con encabezado repetido y color por estado (verde CUBIERTO, amarillo PARCIAL, rojo NO CUBIERTO, naranja CONFLICTO). Si el .docx existe, el script agrega sufijo de fecha/hora.
+- Validar que el conteo del resumen del .docx coincida con el del .txt e indicar la ruta del .docx en la respuesta final.

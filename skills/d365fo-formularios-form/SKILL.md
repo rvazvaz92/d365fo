@@ -608,3 +608,11 @@ El mismo patrón aplica a Action y Display cambiando la raíz del XML.
 
 ### Salida esperada
 Al terminar entrega una tabla: Objeto | Tipo | Archivo | Estado (creado, complementado, ya existía, pendiente) | Etiquetas usadas | Control o menú padre. Agrega la lista de elementos de menú nuevos para el skill `d365fo-seguridad`.
+
+
+## Reglas aprendidas: extension de formulario con boton (DDF_65_05)
+- Boton en el panel de acciones de un form estandar: AxFormExtensionControl con FormControl i:type="AxFormMenuFunctionButtonControl" (Name, Type=MenuFunctionButton, FormControlExtension nil, DataSource, MenuItemName) y <Parent> = grupo de botones real.
+- Verificar el nombre del grupo en el XML estandar antes de usarlo: Select-String -Path K:\AosService\PackagesLocalDirectory\ApplicationSuite\Foundation\AxForm\<Form>.xml -Pattern "<Name>\w*(Invoice|Setup)\w*</Name>".
+- CustTable, pesta�a Factura (aptabInvoice), seccion Configurar = btngrpInvoiceSetup. Ejemplo: CustTable.GRW_65_05_TaxAddendums.
+- Plantilla SimpleList verificada en este ambiente: GRWEstevez\AxForm\GRWMinimumDTASetup (los modelos GRWGDP_002 citados arriba no existen en este ambiente).
+- Si el form se abre desde un registro (p.ej. cliente), definir si debe filtrar por el registro llamador (args.record / dynalink); en DDF_65_05 quedo como pregunta abierta.

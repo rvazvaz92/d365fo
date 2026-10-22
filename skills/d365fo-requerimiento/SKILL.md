@@ -55,3 +55,12 @@ Mantén el lenguaje del negocio y separa claramente lo explícito de lo inferido
 - Incluir en el analisis los puntos de entrada alternativos al mismo dato (alta rapida, alta completa, carga por entidad de datos, integraciones) y marcar cuales quedan cubiertos y cuales no.
 - Contrastar cada criterio de aceptacion con el flujo tecnico real: si un criterio dice "antes de guardar", confirmar que el dato existe en ese momento.
 - Los pendientes sin respuesta (por ejemplo, filtrar por estado de la orden o validar siempre al confirmar) se registran como preguntas abiertas y no se resuelven por suposicion.
+
+## Reglas aprendidas: lectura del DDF desde la carpeta de DDF
+
+- Los DDF viven en `C:\Users\Admin0e2edd3f30\source\repos\DDF` (archivos `.docx`). El usuario SIEMPRE debe indicar el nombre del DDF a analizar o trabajar; si no lo indica, preguntarlo y no elegir uno por suposicion.
+- Localizar el archivo con `Get-ChildItem <ruta> -Filter "*<nombre>*"`. Si hay varias versiones, pedir cual usar.
+- Lectura: un `.docx` es un zip. Abrir `word/document.xml` con `System.IO.Compression.ZipFile`, convertir `</w:p>` en salto de linea, quitar etiquetas XML y guardar el texto en un `.txt` temporal en UTF-8. Leerlo por rangos de lineas (`Get-Content -TotalCount` o `[IO.File]::ReadAllLines` + `Select -First`); no volcar el documento completo en una sola salida.
+- Evitar `Get-Content -Raw` y `-Recurse` sobre carpetas grandes: el terminal del IDE se cancela. Las herramientas de lectura del IDE solo ven archivos dentro de la solucion abierta.
+- Extraer del DDF: tabla de historias (ID, alias, requisito, alcance), por historia la especificacion (campos con numeracion, formulario, tipo, longitud, valor por omision), funcionalidad, entidades de datos y script de pruebas.
+- Caso DDF_65_05_Coflex_Addendas fiscales V1.0: historias 65_05_01 Addenda HomeDepot, 65_05_02 Addenda Coppel, 65_05_03 Activacion de addendas por cliente (boton Addenda en Clientes > Factura > Configurar; campos Generar Addenda y Cliente con lista fija Home Depot/Coppel). La addenda se agrega al XML DESPUES de que el PAC devuelve el CFDI sellado.

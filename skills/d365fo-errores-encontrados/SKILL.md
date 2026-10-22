@@ -119,3 +119,32 @@ Antes de agregar una entrada, busca duplicados y enlaza casos relacionados. Cons
 - **Que no hacer:** sustituir el CoC por un event handler sin permiso del usuario (ver regla en `d365fo-clases-class`). Se hizo una vez y el usuario lo rechazo.
 - **Pendiente:** confirmar si el error desaparece al agregar la referencia/Rebuild. Un `.xpp` residual en `bin\XppSource\<Modelo>` no debe editarse a mano.
 - **Etiquetas:** CoC, SalesTable, Retail, referencia.
+
+
+### CASO-009: Objetos listados en el .rnrproj pero inexistentes o de 0 bytes
+- **Contexto:** DDF_65_05 / GRW_65_05_TaxAddendums.
+- **Sintoma:** el .rnrproj de otra solucion listaba objetos sin archivo fisico; en el modelo 6 de 7 XML pesaban 0 bytes; el .rnrproj del modelo real estaba vacio.
+- **Causa:** escritura fallida sin verificacion y objetos registrados en el proyecto equivocado.
+- **Solucion:** inventariar tamanos con Get-ChildItem; regenerar los de 0 bytes; validar cada XML con [xml]; comparar <Model> del .rnrproj con el modelo destino antes de crear.
+- **Etiquetas:** rnrproj, 0 bytes, modelo equivocado.
+
+### CASO-010: "Project node name '...LabelResources\en-US\...label.txt' is invalid"
+- **Causa:** el proyecto D365 no acepta rutas fisicas anidadas ni extension .xml en Content Include.
+- **Solucion:** Content Include="Ax<Tipo>\<Nombre>" sin .xml, con <Name> y <Link><Carpeta virtual>\<Nombre></Link>; textos de etiquetas como Content Include="<Archivo>.<idioma>.label.txt" con <DependentUpon>AxLabelFile\<Archivo>_<idioma></DependentUpon>; declarar <Folder Include="<Carpeta>\" />.
+- **Etiquetas:** rnrproj, label.
+
+### CASO-011: Herramientas del IDE no editan .rnrproj ni archivos ya registrados
+- **Sintoma:** replace_string_in_file sobre .rnrproj con la solucion abierta falla; create_file no sobrescribe; tras remove_file, recrear en la misma ruta registrada da "Could not get text view".
+- **Solucion:** editar .rnrproj con PowerShell (ReadAllText + regex Replace + WriteAllText). Para reescribir objetos: create_file en <solucion>\staging\Ax<Tipo>\ y robocopy staging a proyecto y a K:. Validar tamanos y XML.
+- **Notas:** Get-ChildItem "$p\Ax*" -Recurse no expande el comodin de carpeta (devolvio 0). robocopy con codigo 1 = copio archivos, no es error.
+- **Etiquetas:** rnrproj, create_file, staging, robocopy.
+
+### CASO-012: Lectura de .docx (DDF) y terminal que se cicla
+- **Sintoma:** salidas largas, here-strings grandes o -Raw/-Recurse en carpetas grandes cancelan el terminal ("A task was canceled", "Writing is not allowed after writer was completed"). get_file no ve archivos fuera de la solucion.
+- **Solucion:** extraer word/document.xml con ZipFile a un .txt dentro de la solucion; leer por rangos o con Select-String. Para textos largos: Get-Content -Encoding UTF8 | Select -First N | Out-String -Width 220. Para anexar texto largo a un archivo: crearlo con create_file dentro de la solucion y anexarlo con Get-Content | Add-Content en un comando corto. Si el terminal se cicla, probar con "echo 1" antes de reintentar.
+- **Etiquetas:** DDF, docx, terminal.
+
+### CASO-013: XML de objetos generados de memoria
+- **Sintoma:** form sin ActionPane/QuickFilter ni campos de sistema, privilegio sin DataEntityPermissions/Forms, menu item sin namespace Metadata.V1, padre de extension de form no verificado.
+- **Solucion:** leer la skill del tipo y usar como plantilla el XML mas pequeno del mismo tipo en un modelo existente (GRWEstevez: AxForm\GRWMinimumDTASetup, AxSecurityPrivilege\GRWMinimumDTASetupMaintain, AxMenuItemDisplay\GRWVendAS2Table, AxEnum\GRWTrimesters, AxTable\GRWRelAutomaticLinkUuidCreditNote, AxFormExtension\ITMTable.GRWEstevez). Verificar el control padre con Select-String sobre el form estandar (ej. CustTable: btngrpInvoiceSetup).
+- **Etiquetas:** plantillas, formulario, privilegio.

@@ -185,3 +185,10 @@ Reglas de decisión:
 - Display y entidades llevan dos niveles (View/Maintain); una acción puntual puede usar un solo privilegio.
 - DirectAccessPermissions, FormControlOverrides y Forms van siempre vacíos.
 - Si no es claro si un Output requiere Maintain, preguntar.
+
+
+## Plantilla verificada de privilegio (DDF_65_05, tomada de GRWEstevez)
+- Estructura completa: Name, Label, <DataEntityPermissions />, <DirectAccessPermissions />, EntryPoints/AxSecurityEntryPointReference (Name, Grant, ObjectName, ObjectType=MenuItemDisplay, Forms/AxSecurityEntryPointReferenceForm con Name del form, <Controls />, <DataSources />), <FormControlOverrides />.
+- Maintain: Grant con Correct, Create, Delete, Read, Update = Allow. View: solo Read = Allow.
+- Ejemplo: GRW_65_05_TaxAddendums\AxSecurityPrivilege\GRWCustAddendaMaintain / GRWCustAddendaView.
+- Menu item display: raiz con xmlns="Microsoft.Dynamics.AX.Metadata.V1" y SubscriberAccessLevel/Read xmlns="" = Allow.
