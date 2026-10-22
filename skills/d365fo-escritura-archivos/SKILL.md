@@ -55,3 +55,12 @@ Por cada formulario custom, dos privilegios ligados a su `MenuItemDisplay`:
 - El .rnrproj se edita solo por PowerShell. Formato: Content Include="Ax<Tipo>\<Nombre>" (sin .xml) + <Name> + <Link>; label.txt con DependentUpon. Ver CASO-010.
 - Plantillas: tomar el XML mas pequeno del mismo tipo de un modelo existente; no generar XML de memoria. Ver CASO-013.
 - Textos largos: create_file + Add-Content; nunca here-strings grandes por terminal. Ver CASO-012.
+
+
+## Regla: ubicacion unica para editar skills
+
+- Todo cambio a una skill (SKILL.md, scripts o ejemplos) se hace SIEMPRE en `C:\Users\Admin0e2edd3f30\source\repos\d365fo\skills\<skill>\`.
+- No editar las copias dentro de otras soluciones (por ejemplo `GRW_DDF_6505\d365fo\skills`); son solo de lectura y se actualizan copiando desde este repositorio.
+- Despues de editar, ejecutar `Sync-Skill.ps1` desde `C:\Users\Admin0e2edd3f30\source\repos\d365fo` para hacer add, commit y push.
+- Si el push es rechazado por cambios remotos: `git pull --rebase` y `git push`.
+- Si se detecta una copia con diferencias, compararla contra este repositorio antes de copiar: solo se integran lineas que falten aqui; nunca sobrescribir el repositorio con una copia atrasada.
